@@ -1,0 +1,2 @@
+# Weight_management_v2
+一個以vibe coding方式寫出來的一套體重管理App
