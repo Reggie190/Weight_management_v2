@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>飲食管理</title>
+<style>
+:root{--bg:#eef2f3;--cd:#fff;--tx:#10231f;--mu:#62766f;--ac:#0f766e;--ac2:#dff1ee;--bd:#d3dcda;--wn:#c2410c;--bl:#2b6cb0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1816;--cd:#162522;--tx:#e4f0ec;--mu:#8aa39b;--ac:#3cc4b4;--ac2:#18332f;--bd:#27403a;--wn:#fb923c;--bl:#63a4e8}}
+:root[data-theme="dark"]{--bg:#0e1816;--cd:#162522;--tx:#e4f0ec;--mu:#8aa39b;--ac:#3cc4b4;--ac2:#18332f;--bd:#27403a;--wn:#fb923c;--bl:#63a4e8}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 system-ui,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--cd)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--cd);border-bottom:1px solid var(--bd);padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+h1{font-size:18px;margin:0;font-weight:800}
+nav{display:flex;gap:4px;overflow-x:auto;flex:1}
+nav button{border:0;background:none;color:var(--mu);padding:6px 12px;border-radius:6px;white-space:nowrap}
+nav button.on{background:var(--ac2);color:var(--ac);font-weight:700}
+main{max-width:920px;margin:0 auto;padding:16px}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:16px;margin-bottom:14px}
+h2{font-size:15px;margin:0 0 10px;font-weight:700}
+input,select,button,textarea{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:7px 10px;min-width:0}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.p,.it button{background:var(--ac);color:var(--cd);border-color:var(--ac)}
+.it button.x{background:none;color:var(--mu);border:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.row input{flex:1 1 90px}
+.it{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd)}
+.list{max-height:320px;overflow-y:auto}
+small,.mu{color:var(--mu)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.grid .card{margin:0}
+.hero{border-top:8px solid var(--tx);border-radius:0 0 10px 10px}
+.num{font-size:64px;line-height:1;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-2px}
+.num.over{color:var(--wn)}
+.line{display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--bd)}
+.line b{font-variant-numeric:tabular-nums}
+.bar{height:10px;background:var(--bd);border-radius:5px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:var(--bl)}
+.hero .bar i{background:var(--ac)}
+.note{background:var(--ac2);padding:8px 10px;border-radius:6px;font-size:13px}
+label{display:flex;flex-direction:column;font-size:13px;color:var(--mu);gap:3px}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:10px}
+textarea{width:100%;height:90px;font:12px monospace}
+.ov{position:fixed;inset:0;z-index:20;background:var(--bg);overflow-y:auto;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px))}
+[hidden]{display:none!important}
+</style></head><body>
+<header><h1>飲食管理</h1>
+<nav><button data-t=home onclick="tab('home')">今日</button><button data-t=food onclick="tab('food')">飲食</button><button data-t=ex onclick="tab('ex')">運動</button><button data-t=wt onclick="tab('wt')">體重</button><button data-t=set onclick="tab('set')">設定</button></nav>
+<input type=date id=dt onchange="D=this.value||D;A()" aria-label="日期"></header>
+<main>
+<section id=home></section>
+<section id=food hidden>
+<div class=card><h2>新增飲食</h2>
+<div class=row><select id=mt><option>早餐<option>午餐<option>晚餐<option>點心</select><input id=qty type=number value=1 step=.5 min=.5 style="flex:0 0 80px"><span class=mu>份</span></div>
+<input id=sq placeholder="搜尋食物，例如：滷肉飯" oninput=FL() style="width:100%;margin-bottom:6px">
+<div id=fl class=list></div></div>
+<div class=card><h2>自訂食物</h2><div class=row><input id=cn placeholder=名稱><input id=cu placeholder="單位（一碗）"><input id=ck type=number placeholder=大卡><button class=p onclick=addC()>儲存食物</button></div></div>
+<div class=card><h2>當日飲食紀錄</h2><div id=fg></div></div></section>
+<section id=ex hidden>
+<div class=card><h2>新增運動</h2><div class=row><select id=et onchange=updEx()></select><input id=em type=number placeholder="分鐘" oninput=updEx()><input id=ek type=number placeholder="消耗大卡"><button class=p onclick=addX()>加入紀錄</button></div><small>選擇運動與時間後會依體重自動估算，也可以直接修改大卡。</small></div>
+<div class=card><h2>當日運動紀錄</h2><div id=xl></div></div></section>
+<section id=wt hidden>
+<div class=card><h2>記錄體重</h2><div class=row><input id=wv type=number step=.1 placeholder="體重 (kg)"><input id=bf type=number step=.1 placeholder="體脂率 (%，選填)"><button class=p onclick=addW()>儲存</button></div></div>
+<div class=card><h2>趨勢（近 30 筆）</h2><div id=chart></div></div>
+<div class=card><h2>最近紀錄</h2><div id=wl></div></div></section>
+<section id=set hidden>
+<div class=card><h2>個人資料</h2><p><button onclick="$('#ob').hidden=false">重新開啟初始設定畫面</button></p><div class=form onchange=saveP()>
+<label>性別<select id=ps><option value=f>女<option value=m>男</select></label>
+<label>年齡<input id=pa type=number></label>
+<label>身高 (cm)<input id=ph type=number></label>
+<label>起始體重 (kg)<input id=pw type=number step=.1></label>
+<label>活動量<select id=pc><option value=1.2>久坐，幾乎不運動<option value=1.375>輕度，每週運動 1–3 天<option value=1.55>中度，每週運動 3–5 天<option value=1.725>高度，每週運動 6–7 天</select></label>
+<label>減重速度<select id=pr><option value=.25>每週 0.25 kg<option value=.5>每週 0.5 kg<option value=.75>每週 0.75 kg</select></label>
+<label>目標體重 (kg)<input id=pg type=number step=.1></label>
+<label>喝水目標 (ml)<input id=pm type=number step=100></label></div></div>
+<div class=card><h2>計算結果</h2><div id=res></div></div>
+<div class=card><h2>備份</h2><div class=row><button onclick=exp()>匯出資料</button><button onclick=imp()>匯入資料</button></div><textarea id=bk placeholder="匯出後請複製這段文字存起來；要還原時貼在這裡再按「匯入資料」"></textarea><p><small>資料只存在這個瀏覽器裡，換裝置或清除瀏覽器資料前請先匯出。熱量皆為估計值，僅供參考，不能取代醫師或營養師的建議。</small></p></div></section>
+</main>
+<div id=ob class=ov hidden><div style="max-width:520px;margin:0 auto"><h1 style="font-size:24px;margin:24px 0 6px">先設定你的基本資料</h1><p class=mu>這些資料用來計算 BMI、基礎代謝率和每日熱量目標，只會存在這個瀏覽器裡。之後可以到「設定」修改。</p>
+<div class=card><div class=form>
+<label>性別<select id=os><option value=f>女<option value=m>男</select></label>
+<label>年齡<input id=oa type=number inputmode=numeric placeholder="例如 30"></label>
+<label>身高 (cm)<input id=oh type=number inputmode=decimal placeholder="例如 165"></label>
+<label>目前體重 (kg)<input id=ow type=number step=.1 inputmode=decimal placeholder="例如 65"></label>
+<label>目標體重 (kg)<input id=og type=number step=.1 inputmode=decimal placeholder="例如 60"></label>
+<label>活動量<select id=oc></select></label>
+<label>減重速度<select id=or></select></label></div>
+<button class=p onclick=finish() style="width:100%;padding:10px">開始使用</button></div></div></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],K='dietapp1',f=Math.round,E=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+let S={p:{sex:'f',age:30,h:165,w:65,act:1.375,rate:.5,gw:60,wg:2000},foods:[],days:{},wt:[]};
+try{const r=localStorage.getItem(K);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+if(!S.setup&&(S.wt.length||Object.values(S.days).some(d=>d.meals&&(d.meals.length||d.ex.length||d.water))))S.setup=1;
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+let D=new Date().toLocaleDateString('sv'),CL=[];
+const day=()=>S.days[D]||(S.days[D]={meals:[],ex:[],water:0});
+const DB=`白飯,一碗,280;糙米飯,一碗,250;滷肉飯,一碗,480;雞肉飯,一碗,400;炒飯,一盤,600;陽春麵,一碗,350;牛肉麵,一碗,650;乾麵,一碗,400;義大利麵,一盤,650;水餃,一顆,45;鍋貼,一個,60;小籠包,一顆,50;饅頭,一個,250;蛋餅,一份,300;飯糰,一個,350;燒餅油條,一份,530;厚片吐司,一片,200;漢堡蛋,一份,400;三明治,一份,330;蘿蔔糕,一份,250;排骨便當,一個,900;雞腿便當,一個,850;自助餐便當,一個,700;水煮蛋,一顆,75;滷蛋,一顆,80;煎蛋,一顆,110;雞胸肉,一份(約100g),120;炸雞腿,一隻,420;豬排,一片,350;鹽酥雞,一份,450;燙青菜,一份,60;炒青菜,一份,100;生菜沙拉(無醬),一份,80;地瓜,一條,200;玉米,一根,130;蘋果,一顆,95;香蕉,一根,90;芭樂,一顆,90;橘子,一顆,50;西瓜,一份,80;無糖豆漿,一杯,100;鮮奶,一杯,150;無糖綠茶,一杯,0;美式咖啡,一杯,5;拿鐵,一杯,150;珍珠奶茶(全糖),一杯,550;可樂,一罐,140;原味優格,一杯,120;堅果,一把,160;洋芋片,一包,280;蛋糕,一片,350`.split(';').map(x=>{const[n,u,k]=x.split(',');return{n,u,k:+k}});
+const EX=[['快走',3.5],['慢跑',8],['騎自行車',6],['游泳',7],['瑜珈',2.5],['重量訓練',5],['跳繩',11],['爬山',6],['打籃球',6.5],['其他',0]];
+const cur=()=>S.wt.length?S.wt[S.wt.length-1].w:S.p.w,sum=a=>a.reduce((s,x)=>s+x.k,0);
+function calc(){const p=S.p,w=cur(),bmr=10*w+6.25*p.h-5*p.age+(p.sex=='m'?5:-161),tdee=bmr*p.act,fl=p.sex=='m'?1500:1200;let t=tdee-p.rate*1100;const low=t<fl;if(low)t=fl;return{w,bmi:w/(p.h/100)**2,bmr,tdee,t,low,fl}}
+const bmiL=b=>b<18.5?'過輕':b<24?'正常':b<27?'過重':'肥胖';
+function tab(t){['home','food','ex','wt','set'].forEach(x=>$('#'+x).hidden=x!=t);$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==t))}
+function R(){const c=calc(),d=day(),e=sum(d.meals),x=sum(d.ex),rem=c.t-e+x,wg=S.p.wg,wa=d.water||0;
+$('#home').innerHTML=`<div class=grid><div class="card hero"><h2>今日還能吃</h2><div class="num${rem<0?' over':''}">${f(rem)}<small style="font-size:18px;letter-spacing:0"> 大卡</small></div>
+<div class=bar><i style="width:${Math.min(100,Math.max(0,e/(c.t+x)*100))}%"></i></div>
+<div class=line><span>每日目標</span><b>${f(c.t)}</b></div><div class=line><span>已攝取</span><b>${f(e)}</b></div><div class=line><span>運動消耗</span><b>${f(x)}</b></div>
+${c.low?`<p class=note>依你設定的減重速度算出的目標低於安全下限，已調整為 ${c.fl} 大卡。建議降低減重速度。</p>`:''}</div>
+<div class=card><h2>喝水</h2><div class=num style="font-size:40px">${wa}<small style="font-size:16px;letter-spacing:0"> / ${wg} ml</small></div>
+<div class=bar><i style="width:${Math.min(100,wa/wg*100)}%"></i></div>
+<div class=row><button onclick=wat(-250)>−250</button><button onclick=wat(250)>+250</button><button onclick=wat(500)>+500</button></div></div>
+<div class=card><h2>身體狀態</h2><div class=line style="border:0"><span>目前體重</span><b>${c.w} kg</b></div><div class=line><span>BMI</span><b>${c.bmi.toFixed(1)}（${bmiL(c.bmi)}）</b></div><div class=line><span>目標體重</span><b>${S.p.gw} kg</b></div></div></div>`}
+function wat(n){const d=day();d.water=Math.max(0,(d.water||0)+n);save();R()}
+function FL(){const q=$('#sq').value.trim();CL=[...S.foods,...DB].filter(x=>x.n.includes(q)).slice(0,40);
+$('#fl').innerHTML=CL.map((x,i)=>`<div class=it><span>${E(x.n)} <small>${E(x.u)}</small></span><span><b>${x.k}</b> 大卡 <button onclick=addF(${i}) aria-label="加入">＋</button></span></div>`).join('')||'<p class=mu>找不到這個食物，請用下方「自訂食物」新增。</p>'}
+function addF(i){const x=CL[i],n=+$('#qty').value||1;day().meals.push({m:$('#mt').value,n:x.n+(n!=1?' ×'+n:''),k:f(x.k*n)});save();A()}
+function addC(){const n=$('#cn').value.trim(),k=+$('#ck').value;if(!n||isNaN(k)||$('#ck').value==='')return alert('請填寫名稱與大卡');S.foods.push({n,u:$('#cu').value.trim()||'一份',k});['cn','cu','ck'].forEach(i=>$('#'+i).value='');save();FL()}
+function LOG(){const m=day().meals;$('#fg').innerHTML=m.length?['早餐','午餐','晚餐','點心'].map(t=>{const a=m.map((x,i)=>({...x,i})).filter(x=>x.m==t);return a.length?`<div class=line><b>${t}</b><b>${sum(a)} 大卡</b></div>`+a.map(x=>`<div class=it><span>${E(x.n)}</span><span>${x.k} 大卡 <button class=x onclick=delM(${x.i}) aria-label="刪除">✕</button></span></div>`).join(''):''}).join(''):'<p class=mu>這天還沒有飲食紀錄，到上方搜尋食物開始記錄。</p>'}
+function delM(i){day().meals.splice(i,1);save();A()}
+function updEx(){const m=EX.find(x=>x[0]==$('#et').value)[1],t=+$('#em').value;if(m&&t)$('#ek').value=f(m*cur()*t/60)}
+function addX(){const k=+$('#ek').value;if(!k)return alert('請填寫消耗大卡，或選擇運動並輸入分鐘');const t=$('#em').value;day().ex.push({n:$('#et').value+(t?' '+t+' 分鐘':''),k});$('#em').value=$('#ek').value='';save();A()}
+function XL(){const a=day().ex;$('#xl').innerHTML=a.length?a.map((x,i)=>`<div class=it><span>${E(x.n)}</span><span>${x.k} 大卡 <button class=x onclick=delX(${i}) aria-label="刪除">✕</button></span></div>`).join(''):'<p class=mu>這天還沒有運動紀錄。</p>'}
+function delX(i){day().ex.splice(i,1);save();A()}
+function addW(){const w=+$('#wv').value;if(!w)return alert('請輸入體重');S.wt=S.wt.filter(x=>x.d!=D);S.wt.push({d:D,w,b:+$('#bf').value||null});S.wt.sort((a,b)=>a.d<b.d?-1:1);$('#wv').value=$('#bf').value='';save();A()}
+function delW(d){S.wt=S.wt.filter(x=>x.d!=d);save();A()}
+function WL(){const a=S.wt.slice(-30),g=S.p.gw;
+if(a.length<2)$('#chart').innerHTML='<p class=mu>至少記錄兩天的體重，就會畫出趨勢圖。</p>';else{
+const v=a.map(x=>x.w).concat(g?[g]:[]),mn=Math.min(...v)-.5,mx=Math.max(...v)+.5,X=i=>40+i*520/(a.length-1),Y=y=>190-(y-mn)/(mx-mn)*170,T='font-size="11" fill="var(--mu)"';
+$('#chart').innerHTML=`<svg viewBox="0 0 600 220" width="100%" role=img aria-label="體重趨勢圖"><line x1=40 x2=560 y1=190 y2=190 stroke="var(--bd)"/>${g?`<line x1=40 x2=560 y1=${Y(g)} y2=${Y(g)} stroke="var(--ac)" stroke-dasharray="5 4"/><text x=562 y=${Y(g)+4} ${T}>目標</text>`:''}<polyline fill=none stroke="var(--tx)" stroke-width=2 points="${a.map((x,i)=>X(i)+','+Y(x.w)).join(' ')}"/>${a.map((x,i)=>`<circle cx=${X(i)} cy=${Y(x.w)} r=3.5 fill="var(--tx)"/>`).join('')}<text x=4 y=${Y(Math.max(...a.map(x=>x.w)))+4} ${T}>${Math.max(...a.map(x=>x.w))}</text><text x=4 y=${Y(Math.min(...a.map(x=>x.w)))+4} ${T}>${Math.min(...a.map(x=>x.w))}</text><text x=40 y=210 ${T}>${a[0].d.slice(5)}</text><text x=560 y=210 text-anchor=end ${T}>${a[a.length-1].d.slice(5)}</text></svg>`}
+$('#wl').innerHTML=S.wt.length?S.wt.slice(-10).reverse().map(x=>`<div class=it><span>${x.d}</span><span><b>${x.w} kg</b>${x.b?' · 體脂 '+x.b+'%':''} <button class=x onclick="delW('${x.d}')" aria-label="刪除">✕</button></span></div>`).join(''):'<p class=mu>還沒有體重紀錄，輸入今天的體重開始追蹤。</p>'}
+function SET(){const c=calc(),p=S.p,wk=cur()>p.gw?Math.ceil((cur()-p.gw)/p.rate):0;
+$('#res').innerHTML=`<div class=line style="border:0"><span>BMI</span><b>${c.bmi.toFixed(1)}（${bmiL(c.bmi)}）</b></div><div class=line><span>基礎代謝率 BMR</span><b>${f(c.bmr)} 大卡</b></div><div class=line><span>每日總消耗 TDEE</span><b>${f(c.tdee)} 大卡</b></div><div class=line><span>每日熱量目標</span><b>${f(c.t)} 大卡</b></div>${wk?`<div class=line><span>預估達標時間</span><b>約 ${wk} 週</b></div>`:''}${c.low?`<p class=note>目標已調整為安全下限 ${c.fl} 大卡，建議降低減重速度。</p>`:''}<p><small>BMI 分級採台灣成人標準。BMR 使用 Mifflin-St Jeor 公式。</small></p>`}
+function loadP(){const p=S.p;$('#ps').value=p.sex;$('#pa').value=p.age;$('#ph').value=p.h;$('#pw').value=p.w;$('#pc').value=p.act;$('#pr').value=p.rate;$('#pg').value=p.gw;$('#pm').value=p.wg}
+function saveP(){S.p={sex:$('#ps').value,age:+$('#pa').value||30,h:+$('#ph').value||165,w:+$('#pw').value||65,act:+$('#pc').value,rate:+$('#pr').value,gw:+$('#pg').value||60,wg:+$('#pm').value||2000};save();A()}
+function exp(){const t=JSON.stringify(S);$('#bk').value=t;$('#bk').select();try{navigator.clipboard.writeText(t)}catch(e){}}
+function imp(){try{const d=JSON.parse($('#bk').value);if(!d.p||!d.days)throw 0;S=Object.assign({p:S.p,foods:[],days:{},wt:[]},d);S.setup=1;save();loadP();A();alert('已匯入')}catch(e){alert('匯入失敗：內容格式不正確')}}
+function finish(){const a=+$('#oa').value,h=+$('#oh').value,w=+$('#ow').value,g=+$('#og').value;if(!(a>=10&&a<=100&&h>=100&&h<=230&&w>=20&&w<=300&&g>=20&&g<=300))return alert('請填寫合理的年齡、身高、目前體重與目標體重');S.p=Object.assign(S.p,{sex:$('#os').value,age:a,h,w,gw:g,act:+$('#oc').value,rate:+$('#or').value});S.setup=1;save();loadP();$('#ob').hidden=true;A();tab('home')}
+function A(){R();FL();LOG();XL();WL();SET()}
+$('#et').innerHTML=EX.map(x=>`<option>${x[0]}</option>`).join('');$('#dt').value=D;loadP();A();tab('home');$('#oc').innerHTML=$('#pc').innerHTML;$('#or').innerHTML=$('#pr').innerHTML;$('#oc').value=1.375;$('#or').value=.5;if(!S.setup)$('#ob').hidden=false
+</script></body></html>
